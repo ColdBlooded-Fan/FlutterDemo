@@ -44,7 +44,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _incrementCounter() async {
   TestRequest request = TestRequest();
-  request.add("aa", "ddd").add("bb", "333");
+  request.add("aa", "ddd").add("bb", "333").add("requestPrams", "6666");
   try{
     var result = await HiNet.getInstance().fire(request);
     print(result);
