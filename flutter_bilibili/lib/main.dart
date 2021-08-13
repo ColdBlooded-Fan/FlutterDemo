@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bilibili/db/hi_cache.dart';
 import 'package:flutter_bilibili/http/core/hi_error.dart';
 import 'package:flutter_bilibili/http/core/hi_net.dart';
+import 'package:flutter_bilibili/http/dao/login_dao.dart';
 import 'package:flutter_bilibili/http/request/TestRequest.dart';
 
 void main() {
@@ -42,22 +44,30 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
-  void _incrementCounter() async {
-  TestRequest request = TestRequest();
-  request.add("aa", "ddd").add("bb", "333").add("requestPrams", "6666");
-  try{
-    var result = await HiNet.getInstance().fire(request);
-    print(result);
-  } on NeedAuth catch(e) {
-    print(e);
-  }on NeedLogin catch (e) {
-    print(e);
-  }on HiNetError catch(e) {
-    print(e);
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    HiCache.preInit();
   }
 
+  void _incrementCounter() async {
 
+    test2();
 
+  }
+
+  void test2() async {
+    try {
+      // var result = await LoginDao.register("几曾回首", "dahua", "3848904", "9159");
+
+      var result = await LoginDao.login("几曾回首", "dahua");
+      print("result==$result");
+    } on NeedAuth catch (e) {
+      print("e==$e");
+    } on HiNetError catch (e) {
+      print("e==$e");
+    }
   }
 
   @override

@@ -27,7 +27,7 @@ abstract class BaseRequest {
     if (useHttps) {
       uri = Uri.https(authority(), pathStr, params);
     } else {
-      uri = Uri.http(authority(), pathStr,params);
+      uri = Uri.http(authority(), pathStr, params);
     }
     return uri.toString();
   }
@@ -42,7 +42,12 @@ abstract class BaseRequest {
     return this;
   }
 
-  Map<String,dynamic> header = Map();
+  Map<String, dynamic> header = {
+    "course-flag": 'fa',
+    "auth-token":
+        "ZmEtMjAyMS0wNC0xMiAyMToyMjoyMC1mYQ==fa"
+  };
+
   ///添加header
   BaseRequest addHeader(String k, Object v) {
     header[k] = v.toString();
