@@ -29,9 +29,9 @@ class _LoginInputState extends State<LoginInput> {
   @override
   void initState() {
     super.initState();
-    //是否获取光标
+    //是否获取光标 todo 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
     _focusNode.addListener(() {
-      print("has focus:${_focusNode.hasFocus}");
+    print("has focus:${_focusNode.hasFocus}");
       if (widget.foucChanged != null) {
         widget.foucChanged(_focusNode.hasFocus);
       }
