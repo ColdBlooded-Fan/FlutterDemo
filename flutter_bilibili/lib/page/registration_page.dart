@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bilibili/http/core/hi_error.dart';
 import 'package:flutter_bilibili/http/dao/login_dao.dart';
 import 'package:flutter_bilibili/util/string_util.dart';
+import 'package:flutter_bilibili/util/toast.dart';
 import 'package:flutter_bilibili/widget/appbar.dart';
+import 'package:flutter_bilibili/widget/login_button.dart';
 import 'package:flutter_bilibili/widget/login_effect.dart';
 import 'package:flutter_bilibili/widget/login_input.dart';
 
@@ -82,15 +84,14 @@ class _RegistrationState extends State<Registration> {
               "请输入你的慕课网用户名ID",
               lineStrenth: true,
               obscureText: true,
+              keboardType: TextInputType.number,
               onchanged: (text) {
                 print(">>" + text);
                 imoocId = text;
                 checkInput();
               },
               foucChanged: (focus) {
-                this.setState(() {
-                  protect = focus;
-                });
+
               },
             ),
             LoginInput(
@@ -108,7 +109,11 @@ class _RegistrationState extends State<Registration> {
             ),
             Padding(
               padding: EdgeInsets.only(top: 20, left: 20, right: 20),
-              child: _loginButton(),
+              child: LoginButton(
+                title: '注册',
+                enable: loginEnable,
+                onPressed: checkParams,
+              ),
             )
           ],
         ),
@@ -148,16 +153,20 @@ class _RegistrationState extends State<Registration> {
   void send() async {
     try {
       var result =
-      await LoginDao.register(userName, passWord, imoocId, orderId);
+          await LoginDao.register(userName, passWord, imoocId, orderId);
       if (result['code'] == 0) {
         print('注册成功');
+        showToast('注册成功');
         if (widget.onJumpToLogin != null) {
           widget.onJumpToLogin();
         }
       } else {
-        print(result['msg']);
+        print('11' + result['msg']);
+        showWarnToast(result['msg']);
       }
-    } on NeedAuth catch (e) {}
+    } on NeedAuth catch (e) {
+      showWarnToast(e.message);
+    }
   }
 
   void checkParams() {

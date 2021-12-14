@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 
 //主色调
+///主色调
 const MaterialColor primary = const MaterialColor(
-    0xfffb7299, const <int, Color>{50: const Color(0xfff9db5)});
+  0xfffb7299,
+  const <int, Color>{50: const Color(0xffff9db5)},
+);
 
 
 //白色
