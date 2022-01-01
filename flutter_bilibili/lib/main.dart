@@ -11,6 +11,7 @@ import 'package:flutter_bilibili/page/login_page.dart';
 import 'package:flutter_bilibili/page/registration_page.dart';
 import 'package:flutter_bilibili/page/video_detail_page.dart';
 import 'package:flutter_bilibili/util/color.dart';
+import 'package:flutter_bilibili/util/toast.dart';
 
 void main() {
   runApp(BiliApp());
@@ -87,24 +88,59 @@ class BiliRouterDelegate extends RouterDelegate<BiliRouterPath>
         notifyListeners();
       }));
     } else if (routeStatus == RouterStatus.home) {
-      page = pageWrap(LoginPage());
+      page = pageWrap(LoginPage(
+        onJumpRegister: () {
+          _routerStatus = RouterStatus.register;
+          notifyListeners();
+        },
+        loginSuccess: () {
+          _routerStatus = RouterStatus.home;
+          notifyListeners();
+        },
+      ));
+    } else {
+      page = pageWrap(LoginPage(
+        onJumpRegister: () {
+          _routerStatus = RouterStatus.register;
+          notifyListeners();
+        },
+        loginSuccess: () {
+          _routerStatus = RouterStatus.home;
+          notifyListeners();
+        },
+      ));
     }
     //重新创建一个数组,否则pages因为引用没有改变路由不会变化
     tempPages = [...tempPages, page];
 
     pages = tempPages;
 
-    return Navigator(
-      key: navigatorKey,
-      pages: pages,
-      onPopPage: (route, result) {
-        //这里处理是否可以返回上个页面
-        if (!route.didPop(result)) {
-          return false;
-        }
-        return true;
-      },
-    );
+    return WillPopScope(
+        child: Navigator(
+          key: navigatorKey,
+          pages: pages,
+          onPopPage: (route, result) {
+            if (route.settings is MaterialPage) {
+              //登录页未登录返回拦截
+              if ((route.settings as MaterialPage).child is LoginPage) {
+                if (!hasLogin) {
+                  showWarnToast("请先登录");
+                  return false;
+                }
+              }
+            }
+            //这里处理是否可以返回上个页面
+            if (!route.didPop(result)) {
+              return false;
+            }
+            //出栈
+            pages.removeLast();
+            return true;
+          },
+        ),
+
+        ///处理Android物理返回键无法返回上一界面的问题
+        onWillPop: () async => !await navigatorKey.currentState.maybePop());
   }
 
   RouterStatus get routeStatus {
