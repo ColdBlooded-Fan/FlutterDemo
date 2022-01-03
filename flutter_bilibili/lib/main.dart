@@ -52,7 +52,16 @@ class BiliRouterDelegate extends RouterDelegate<BiliRouterPath>
   final GlobalKey<NavigatorState> navigatorKey;
 
   //为navigation设置一个key,必要的时候可以通过navigatorKey.currentState来获取到NavigatorState对象
-  BiliRouterDelegate() : navigatorKey = GlobalKey<NavigatorState>();
+  BiliRouterDelegate() : navigatorKey = GlobalKey<NavigatorState>() {
+    HiNavigator.getInstance().registerRouteJump(
+        RouteJumpListener(onJumpTo: (RouterStatus status, {Map args}) {
+      _routerStatus = status;
+      if (status == RouterStatus.detail) {
+        this.videoModel = args['videoMo'];
+      }
+      notifyListeners();
+    }));
+  }
 
   List<MaterialPage> pages = [];
 
@@ -75,11 +84,7 @@ class BiliRouterDelegate extends RouterDelegate<BiliRouterPath>
 
     if (routeStatus == RouterStatus.home) {
       pages.clear();
-      page = pageWrap(HomePage(onJumpDetail: (data) {
-        this.videoModel = data;
-        _routerStatus = RouterStatus.detail;
-        notifyListeners();
-      }));
+      page = pageWrap(HomePage());
     } else if (routeStatus == RouterStatus.detail) {
       page = pageWrap(VideoDetailPage(videoModel: videoModel));
     } else if (routeStatus == RouterStatus.register) {

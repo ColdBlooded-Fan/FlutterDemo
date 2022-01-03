@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bilibili/model/video_model.dart';
+import 'package:flutter_bilibili/navigator/hi_navigation.dart';
 
 class HomePage extends StatefulWidget {
-  final ValueChanged<VideoModel> onJumpDetail;
 
-  const HomePage({Key key, this.onJumpDetail}) : super(key: key);
+
+  const HomePage({Key key}) : super(key: key);
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -20,7 +21,10 @@ class _HomePageState extends State<HomePage> {
           children: [
             Text("首页"),
             MaterialButton(
-              onPressed: () => widget.onJumpDetail(VideoModel(1111)),
+              onPressed: () {
+                HiNavigator.getInstance().jumpTo(RouterStatus.detail,
+                    args: {'videoMo': VideoModel(1001)});
+              },
               child: Text('详情'),
             )
           ],
