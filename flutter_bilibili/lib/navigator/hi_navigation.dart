@@ -38,6 +38,8 @@ RouterStatus getStatus(MaterialPage page) {
   }
 }
 
+typedef RouteChangeListener(RouterStatusInfo current, RouterStatusInfo pre);
+
 class RouterStatusInfo {
   final RouterStatus routerStatus;
   final Widget page;
@@ -54,6 +56,10 @@ class HiNavigator extends _RouteJumpListener {
 
   RouteJumpListener _routeJump;
 
+  List<RouteChangeListener> _listeners = [];
+
+  RouterStatusInfo _current;
+
   static HiNavigator getInstance() {
     if (_instance == null) {
       _instance = HiNavigator._();
@@ -66,10 +72,41 @@ class HiNavigator extends _RouteJumpListener {
     this._routeJump = listener;
   }
 
+  ///监听路由页面跳转
+  void addListener(RouteChangeListener listener) {
+    if (!_listeners.contains(listener)) {
+      _listeners.add(listener);
+    }
+  }
+
+  ///移除监听
+  void removeListener(RouteChangeListener listener) {
+    _listeners.remove(listener);
+  }
+
   @override
   void jumpTo(RouterStatus routerStatus, {Map<dynamic, dynamic> args}) {
-
     _routeJump.onJumpTo(routerStatus, args: args);
+  }
+
+  ///通知路由页面变化
+  void notify(List<MaterialPage> currentPages, List<MaterialPage> prePages) {
+
+    if (currentPages == prePages) return;
+    var currentPage =
+        RouterStatusInfo(getStatus(currentPages.last), currentPages.last.child);
+    print('currentPages:${currentPage.page}');
+
+    _notify(currentPage);
+  }
+
+  void _notify(RouterStatusInfo currentPage) {
+    print('hi_navigator:current:${currentPage.page}');
+    print('hi_navigator:pre:${_current?.page}');
+    _listeners.forEach((element) {
+      element(currentPage, _current);
+    });
+    _current = currentPage;
   }
 }
 

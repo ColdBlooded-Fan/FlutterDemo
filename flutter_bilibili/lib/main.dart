@@ -118,6 +118,8 @@ class BiliRouterDelegate extends RouterDelegate<BiliRouterPath>
     //重新创建一个数组,否则pages因为引用没有改变路由不会变化
     tempPages = [...tempPages, page];
 
+    //通知路由发生变化
+    HiNavigator.getInstance().notify(tempPages, pages);
     pages = tempPages;
 
     return WillPopScope(
@@ -138,8 +140,12 @@ class BiliRouterDelegate extends RouterDelegate<BiliRouterPath>
             if (!route.didPop(result)) {
               return false;
             }
+
+            var tempPages = [...pages];
             //出栈
             pages.removeLast();
+            //通知路由发生变化
+            HiNavigator.getInstance().notify(pages, tempPages);
             return true;
           },
         ),
