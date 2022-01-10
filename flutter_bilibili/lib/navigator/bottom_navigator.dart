@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bilibili/navigator/hi_navigation.dart';
 import 'package:flutter_bilibili/page/favorite_page.dart';
 import 'package:flutter_bilibili/page/home_page.dart';
 import 'package:flutter_bilibili/page/profile_page.dart';
@@ -17,19 +18,26 @@ class _BottomNavigatorState extends State<BottomNavigator> {
 
   final PageController _controller = PageController(initialPage: 0);
 
+  List<Widget> _pages;
 
+  static int initialPage = 0;
+  bool _hasBuild = false;
 
   @override
   Widget build(BuildContext context) {
+    _pages = [HomePage(), RankingPage(), FavoritePage(), ProfilePage()];
+
+    if (!_hasBuild) {
+      HiNavigator.getInstance()
+          .onBottomTabChanged(initialPage, _pages[initialPage]);
+      _hasBuild = true;
+    }
+
     return Scaffold(
       body: PageView(
         controller: _controller,
-        children: [HomePage(), RankingPage(),FavoritePage(),  ProfilePage()],
-        onPageChanged: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
+        children: _pages,
+        onPageChanged: (index)=> _onItemTapped(index,pageChange: true),
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: [
@@ -40,7 +48,7 @@ class _BottomNavigatorState extends State<BottomNavigator> {
         ],
         currentIndex: _currentIndex,
         selectedItemColor: Colors.amber[800],
-        onTap: _onItemTapped,
+        onTap: (index) => _onItemTapped(index),
         type: BottomNavigationBarType.fixed,
       ),
     );
@@ -56,9 +64,15 @@ class _BottomNavigatorState extends State<BottomNavigator> {
         label: title);
   }
 
-  void _onItemTapped(int value) {
+  void _onItemTapped(int value,{pageChange = false}) {
     if (value == _currentIndex) return;
-    _controller.jumpToPage(value);
+
+    if(!pageChange) {
+      _controller.jumpToPage(value);
+    }else {
+      HiNavigator.getInstance().onBottomTabChanged(value, _pages[value]);
+    }
+
     setState(() {
       _currentIndex = value;
     });

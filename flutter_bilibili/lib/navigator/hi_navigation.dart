@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bilibili/navigator/bottom_navigator.dart';
 import 'package:flutter_bilibili/page/home_page.dart';
 import 'package:flutter_bilibili/page/login_page.dart';
 import 'package:flutter_bilibili/page/registration_page.dart';
@@ -25,7 +26,7 @@ int getPageIndex(List<MaterialPage> pages, RouterStatus routerStatus) {
 
 ///获取page 的状态
 RouterStatus getStatus(MaterialPage page) {
-  if (page.child is HomePage) {
+  if (page.child is BottomNavigator) {
     return RouterStatus.home;
   } else if (page.child is Registration) {
     return RouterStatus.register;
@@ -60,11 +61,20 @@ class HiNavigator extends _RouteJumpListener {
 
   RouterStatusInfo _current;
 
+  //首页底部tab
+  RouterStatusInfo _bottomTab;
+
   static HiNavigator getInstance() {
     if (_instance == null) {
       _instance = HiNavigator._();
     }
     return _instance;
+  }
+
+  ///首页底部tab切换监听
+  void onBottomTabChanged(int index, Widget page) {
+    _bottomTab = RouterStatusInfo(RouterStatus.home, page);
+    _notify(_bottomTab);
   }
 
   /// 注册路由跳转逻辑
@@ -91,7 +101,6 @@ class HiNavigator extends _RouteJumpListener {
 
   ///通知路由页面变化
   void notify(List<MaterialPage> currentPages, List<MaterialPage> prePages) {
-
     if (currentPages == prePages) return;
     var currentPage =
         RouterStatusInfo(getStatus(currentPages.last), currentPages.last.child);
@@ -101,6 +110,10 @@ class HiNavigator extends _RouteJumpListener {
   }
 
   void _notify(RouterStatusInfo currentPage) {
+    if (currentPage.page is BottomNavigator && _bottomTab != null) {
+      //如果打开的是首页
+      currentPage = _bottomTab;
+    }
     print('hi_navigator:current:${currentPage.page}');
     print('hi_navigator:pre:${_current?.page}');
     _listeners.forEach((element) {
