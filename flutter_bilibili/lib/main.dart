@@ -5,6 +5,7 @@ import 'package:flutter_bilibili/http/core/hi_net.dart';
 import 'package:flutter_bilibili/http/dao/login_dao.dart';
 import 'package:flutter_bilibili/http/request/TestRequest.dart';
 import 'package:flutter_bilibili/model/video_model.dart';
+import 'package:flutter_bilibili/navigator/bottom_navigator.dart';
 import 'package:flutter_bilibili/navigator/hi_navigation.dart';
 import 'package:flutter_bilibili/page/home_page.dart';
 import 'package:flutter_bilibili/page/login_page.dart';
@@ -84,7 +85,7 @@ class BiliRouterDelegate extends RouterDelegate<BiliRouterPath>
 
     if (routeStatus == RouterStatus.home) {
       pages.clear();
-      page = pageWrap(HomePage());
+      page = pageWrap(BottomNavigator());
     } else if (routeStatus == RouterStatus.detail) {
       page = pageWrap(VideoDetailPage(videoModel: videoModel));
     } else if (routeStatus == RouterStatus.register) {
