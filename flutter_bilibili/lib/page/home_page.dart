@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bilibili/model/video_model.dart';
 import 'package:flutter_bilibili/navigator/hi_navigation.dart';
+import 'package:flutter_bilibili/page/hometab_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key key}) : super(key: key);
@@ -9,12 +10,18 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin {
+class _HomePageState extends State<HomePage>
+    with AutomaticKeepAliveClientMixin, TickerProviderStateMixin {
   var listener;
+
+  var _controller;
+  final List<String> _tabs = ["推荐", "典藏", "美食", "热门", "追博"];
 
   @override
   void initState() {
     super.initState();
+    _controller =
+        TabController(initialIndex: 0, length: _tabs.length, vsync: this);
     HiNavigator.getInstance().addListener(this.listener = (current, pre) {
       print('main_current:${current.page}');
       print('main_pre:${pre.page}');
@@ -35,20 +42,32 @@ class _HomePageState extends State<HomePage> with AutomaticKeepAliveClientMixin 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
-      body: Container(
-        child: Column(
-          children: [
-            Text("首页"),
-            MaterialButton(
-              onPressed: () {
-                HiNavigator.getInstance().jumpTo(RouterStatus.detail,
-                    args: {'videoMo': VideoModel(1001)});
-              },
-              child: Text('详情'),
-            )
-          ],
-        ),
+      body: Column(
+        children: [
+          TabBar(
+            labelColor: Colors.black,
+            indicatorColor: Colors.amber,
+            tabs: _tabs
+                .map((e) => Tab(
+                      child: Text(
+                        e,
+                        style: TextStyle(
+                            fontSize: 16, color: Colors.deepOrangeAccent),
+                      ),
+                    ))
+                .toList(),
+            controller: _controller,
+          ),
+          Flexible(
+              child: TabBarView(
+            children: _tabs
+                .map((e) => HomeTabPage(
+                      name: e,
+                    ))
+                .toList(),
+            controller: _controller,
+          ))
+        ],
       ),
     );
   }
